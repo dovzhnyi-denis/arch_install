@@ -15,6 +15,7 @@ sed -i 's/HOOKS=(base udev autodetect modconf block filesystems keyboard fsck)/H
 mkinitcpio -p linux
 grub-install --target=x86_64-efi --efi-directory=/efi --bootloader-id=GRUB
 sed -i 's/GRUB_CMDLINE_LINUX=""/GRUB_CMDLINE_LINUX="cryptdevice=UUID=part_uuid:part_mapper:allow-discards root=/dev/mapper/part_mapper/' /etc/default/grub
+sed -i -e s/#GRUB_DISABLE_SUBMENU=y/GRUB_DISABLE_SUBMENU=y/ -e s/GRUB_DEFAULT=0s/GRUB_DEFAULT=saved/ -e s/#GRUB_SAVEDEFAULT=true/GRUB_SAVEDEFAULT=true/ /etc/default/grub
 grub-mkconfig -o /boot/grub/grub.cfg
 passwd
 EOF
