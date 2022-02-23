@@ -2,17 +2,32 @@
 
 loadkeys us
 timedatectl set-ntp true
-pacstrap /mnt base linux linux-firmware dhcpcd iwd vim screen grub
+pacstrap /mnt base linux linux-firmware dhcpcd iwd vim screen grub efibootmgr
+grub_id=$(mount | grep /mnt | cut -d' ' -f1 | rev | cut -d/ -f1 | rev | cut -d'-' -f1)
 genfstab -U /mnt >> /mnt/etc/fstab
-cat << EOF > /mnt/chroot_part.sh
+cat << EOF > /chroot_template.sh
 ln -sf /usr/share/zoneinfo/Europe/Kiev /etc/locatime
 hwclock --systohc
 sed -i -e "s/#en_US\.UTF-8 UTF-8/en_US\.UTF-8 UTF-8/" -e "s/#uk_UA\.UTF-8 UTF-8/uk_UA\.UTF-8 UTF-8/" /etc/locale.gen
 echo "KEYMAP=us" > /etc/vconsole.conf
-echo "testing" > /etc/hostname
-grub-install --target=i386-pc $(df | grep -P "\/$" | cut -d' ' -f1)
+echo "make_new_hostname" > /etc/hostname
+sed -i 's/HOOKS=(base udev autodetect modconf block filesystems keyboard fsck)/HOOKS="base udev autodetect modconf block keyboard keymap consolefont encrypt filesystems fsck" /etc/mkinitcpio.conf
+mkinitcpio -p linux
+grub-install --target=x86_64-efi --efi-directory=/efi --bootloader-id=GRUB
+sed -i 's/GRUB_CMDLINE_LINUX=""/GRUB_CMDLINE_LINUX="cryptdevice=UUID=part_uuid:part_mapper:allow-discards root=/dev/mapper/part_mapper/' /etc/default/grub
 grub-mkconfig -o /boot/grub/grub.cfg
 passwd
 EOF
+if [[ -z "$(mount | grep /mnt | grep mapper)" ]]; then
+  sed -i /mkinitcpio/d /chroot_template.sh
+  sed -i /GRUB_CMDLINE_LINUX/d /chroot_template.sh
+else
+  puid=$(blkid | grep -v mapper | grep -oE "UUID=\"[a-z0-9A-Z\-]+\" TYPE\=\"crypto_LUKS\"" | cut -d' ' -f1 | sed -e s/UUID=// -e s/\"//g)
+  pmapper=${grub_id}-root
+  sed -i "s/part_uuid:part_mapper:allow-discards root=\/dev\/mapper\/part_mapper/${puid}:${pmapper}:allow-discards root=\/dev\/mapper\/${pmapper}/" /chroot_template.sh
+fi 
+[[ ! -d /sys/firmware/efi/efivars ]] && sed -i "s:grub-install --target=x86_64-efi --efi-directory=\/efi:grub-install --target=i386-pc \$\(mount | grep \"on \/ \" | cut -d\' \' -f1\):" /chroot_template.sh 
+sed -i "s:--bootloader-id=GRUB:--bootloader-id=Arch-${grub_id}:" /chroot_template.sh
+mv -v /chroot_template.sh /mnt/chroot_part.sh
 chmod 700 /mnt/chroot_part.sh
 arch-chroot /mnt ./chroot_part.sh
