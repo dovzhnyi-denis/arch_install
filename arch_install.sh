@@ -2,7 +2,7 @@
 
 loadkeys us
 timedatectl set-ntp true
-pacstrap /mnt base linux linux-firmware dhcpcd iwd vim screen grub efibootmgr
+pacstrap /mnt base linux-lts linux-firmware dhcpcd iwd vim screen grub efibootmgr
 grub_id=$(mount | grep /mnt | cut -d' ' -f1 | rev | cut -d/ -f1 | rev | cut -d'-' -f1)
 genfstab -U /mnt >> /mnt/etc/fstab
 cat << EOF > /chroot_template.sh
