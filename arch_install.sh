@@ -9,7 +9,7 @@ done
 loadkeys us
 timedatectl set-ntp true
 pacstrap /mnt base linux-lts linux-firmware dhcpcd iwd vim screen grub efibootmgr archlinux-keyring dhcpcd
-[[ -n "$plasma_desktop" ]] && pacstrap /mnt xorg plasma-meta plasma-nm konsole dolphin networkmanager networkmanager-l2tp
+[[ -n "$plasma_desktop" ]] && pacstrap /mnt xorg plasma-meta plasma-nm konsole dolphin networkmanager networkmanager-l2tp webapp-manager
 grub_id=$(mount | grep /mnt | cut -d' ' -f1 | rev | cut -d/ -f1 | rev | cut -d'-' -f1)
 genfstab -U /mnt >> /mnt/etc/fstab
 cat << EOF > /chroot_template.sh
