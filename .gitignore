@@ -1,0 +1,7 @@
+*~
+.bkp
+.swp
+node_modules/
+*.[oa]
+*.html
+commit_msg
