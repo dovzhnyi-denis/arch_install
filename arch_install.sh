@@ -40,6 +40,8 @@ sed -i 's/GRUB_CMDLINE_LINUX=\"\"/GRUB_CMDLINE_LINUX=\"cryptdevice=UUID=part_uui
 sed -i -e s/#GRUB_DISABLE_SUBMENU=y/GRUB_DISABLE_SUBMENU=y/ -e s/GRUB_DEFAULT=0s/GRUB_DEFAULT=saved/ -e s/#GRUB_SAVEDEFAULT=true/GRUB_SAVEDEFAULT=true/ /etc/default/grub
 grub-mkconfig -o /boot/grub/grub.cfg
 systemctl enable dhcpcd
+systemctl enable NetworkManager
+useradd -m -p $(echo testing | openssl passwd -1 -stdin) user
 EOF
 if [[ -z "$(mount | grep "/mnt" | grep mapper)" ]]; then
   sed -i /mkinitcpio/d /chroot_template.sh
@@ -53,9 +55,9 @@ fi
 sed -i "s:--bootloader-id=GRUB:--bootloader-id=Arch-${grub_id}:" /chroot_template.sh
 
 if [[ -n "$plasma" ]]; then 
-        echo 'systemctl enable sddm && systemctl enable NetworkManager' >> /chroot_template.sh
+        echo 'systemctl enable sddm' >> /chroot_template.sh
 elif [[ -n "$cinnamon" ]]; then
-        echo 'systemctl enable lightdm && systemctl enable NetworkManager' >> /chroot_template.sh
+        echo 'systemctl enable lightdm' >> /chroot_template.sh
 fi
 
 echo passwd >> /chroot_template.sh
