@@ -2,16 +2,21 @@
 
 while [ -n "$1" ]; do
   case "$1" in 
-    -w|--workstation) workstation=1; shift;;
+    -p|--plasma) plasma=1; shift;;
+    -c|--cinnamon) cinnamon=1; shift;;
   esac
 done
 
 loadkeys us
 timedatectl set-ntp true
 # Default set of packages.
-pkgs="base linux-lts linux-firmware networkmanager dhcpcd iwd vim screen grub efibootmgr archlinux-keyring dhcpcd bind wget curl at man-pages man-db"
+pkgs="base linux-lts linux-firmware networkmanager dhcpcd iwd vim screen grub efibootmgr archlinux-keyring dhcpcd bind wget curl at man-pages man-db git";
 # Packages for a desktop workstation.
-[[ -n "$workstation" ]] && pkgs+="sddm xorg plasma-meta plasma-nm konsole dolphin networkmanager-l2tp libreoffice-still git flatpak ansible celluloid cmus cronie discord dolphin easytag evolution firefox jq man-db man-pages pass nginx nload pass-otp pavucontrol python qalculate-qt rsync virt-manager qemu whois"
+if [[ -n "$plasma" ]]; then 
+        pkgs+="sddm xorg plasma-meta plasma-nm konsole dolphin networkmanager-l2tp libreoffice-still flatpak ansible celluloid cmus cronie discord dolphin easytag evolution firefox jq man-db man-pages pass nginx nload pass-otp pavucontrol python qalculate-qt rsync virt-manager qemu whois";
+elif [[ -n "$cinnamon" ]]; then 
+        pkgs+="lightdm-gtk-greeter cinnamon xfce4-terminal networkmanager-l2tp libreoffice-still flatpak ansible celluloid cmus cronie discord dolphin easytag evolution firefox jq man-db man-pages pass nginx nload pass-otp pavucontrol python qalculate-qt rsync virt-manager qemu whois";
+fi
 pacstrap /mnt $pkgs
 #grub_id=$(mount | grep "/mnt " | cut -d' ' -f1 | rev | cut -d/ -f1 | rev)
 grub_id=Linux
@@ -47,7 +52,11 @@ fi
 [[ ! -d /sys/firmware/efi/efivars ]] && sed -i "s:grub-install --target=x86_64-efi --efi-directory=\/boot\/efi:grub-install --target=i386-pc \$\(mount | grep \"on \/ \" | cut -d\' \' -f1 | tr -d [0-9] \):" /chroot_template.sh 
 sed -i "s:--bootloader-id=GRUB:--bootloader-id=Arch-${grub_id}:" /chroot_template.sh
 
-[[ -n "$plasma_desktop" ]] && echo 'systemctl enable sddm && systemctl enable NetworkManager' >> /chroot_template.sh
+if [[ -n "$plasma" ]]; then 
+        echo 'systemctl enable sddm && systemctl enable NetworkManager' >> /chroot_template.sh
+elif [[ -n "$cinnamon" ]]; then
+        echo 'systemctl enable lightdm && systemctl enable NetworkManager' >> /chroot_template.sh
+fi
 
 echo passwd >> /chroot_template.sh
 mv -v /chroot_template.sh /mnt/chroot_part.sh
