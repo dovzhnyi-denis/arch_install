@@ -7,6 +7,8 @@ while [ -n "$1" ]; do
   esac
 done
 
+pacman -Sy archlinux-keyring -y
+
 loadkeys us
 timedatectl set-ntp true
 # Default set of packages.
