@@ -17,7 +17,7 @@ pkgs="base linux-lts linux-firmware networkmanager dhcpcd iwd vim screen grub ef
 if [[ -n "$plasma" ]]; then 
         pkgs+=" sddm xorg plasma-meta plasma-nm konsole dolphin networkmanager-l2tp libreoffice-still flatpak ansible celluloid cmus cronie discord dolphin easytag evolution firefox jq man-db man-pages pass nginx nload pass-otp pavucontrol python qalculate-qt rsync virt-manager qemu whois";
 elif [[ -n "$cinnamon" ]]; then 
-        pkgs+=" lightdm-gtk-greeter cinnamon xfce4-terminal networkmanager-l2tp libreoffice-still flatpak ansible celluloid cmus cronie discord dolphin easytag evolution firefox jq man-db man-pages pass nginx nload pass-otp pavucontrol python qalculate-qt rsync virt-manager qemu whois";
+        pkgs+=" lightdm-gtk-greeter cinnamon xfce4-terminal networkmanager-l2tp libreoffice-still flatpak ansible celluloid cmus cronie discord dolphin easytag evolution firefox jq man-db man-pages pass nginx nload pass-otp pavucontrol python qalculate-qt rsync virt-manager qemu whois papirus-icon-theme";
 fi
 pacstrap /mnt $pkgs
 #grub_id=$(mount | grep "/mnt " | cut -d' ' -f1 | rev | cut -d/ -f1 | rev)
@@ -43,7 +43,7 @@ sed -i -e s/#GRUB_DISABLE_SUBMENU=y/GRUB_DISABLE_SUBMENU=y/ -e s/GRUB_DEFAULT=0s
 grub-mkconfig -o /boot/grub/grub.cfg
 systemctl enable dhcpcd
 systemctl enable NetworkManager
-useradd -m -p $(echo testing | openssl passwd -1 -stdin) user
+useradd -m user
 EOF
 if [[ -z "$(mount | grep "/mnt" | grep mapper)" ]]; then
   sed -i /mkinitcpio/d /chroot_template.sh
@@ -63,6 +63,7 @@ elif [[ -n "$cinnamon" ]]; then
 fi
 
 echo passwd >> /chroot_template.sh
+echo passwd user >> /chroot_template.sh
 mv -v /chroot_template.sh /mnt/chroot_part.sh
 chmod 700 /mnt/chroot_part.sh
 arch-chroot /mnt ./chroot_part.sh
