@@ -7,7 +7,7 @@ while [ -n "$1" ]; do
   esac
 done
 
-pacman -Sy archlinux-keyring -y
+pacman -Sy archlinux-keyring --noconfirm
 
 loadkeys us
 timedatectl set-ntp true
@@ -67,4 +67,4 @@ echo passwd user >> /chroot_template.sh
 mv -v /chroot_template.sh /mnt/chroot_part.sh
 chmod 700 /mnt/chroot_part.sh
 arch-chroot /mnt ./chroot_part.sh
-#rm /mnt/chroot_part.sh
+rm /mnt/chroot_part.sh
