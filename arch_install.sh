@@ -15,9 +15,9 @@ timedatectl set-ntp true
 pkgs="base linux-lts linux-firmware networkmanager dhcpcd iwd vim screen grub efibootmgr archlinux-keyring dhcpcd bind wget curl at man-pages man-db git";
 # Packages for a desktop workstation.
 if [[ -n "$plasma" ]]; then 
-        pkgs+="sddm xorg plasma-meta plasma-nm konsole dolphin networkmanager-l2tp libreoffice-still flatpak ansible celluloid cmus cronie discord dolphin easytag evolution firefox jq man-db man-pages pass nginx nload pass-otp pavucontrol python qalculate-qt rsync virt-manager qemu whois";
+        pkgs+=" sddm xorg plasma-meta plasma-nm konsole dolphin networkmanager-l2tp libreoffice-still flatpak ansible celluloid cmus cronie discord dolphin easytag evolution firefox jq man-db man-pages pass nginx nload pass-otp pavucontrol python qalculate-qt rsync virt-manager qemu whois";
 elif [[ -n "$cinnamon" ]]; then 
-        pkgs+="lightdm-gtk-greeter cinnamon xfce4-terminal networkmanager-l2tp libreoffice-still flatpak ansible celluloid cmus cronie discord dolphin easytag evolution firefox jq man-db man-pages pass nginx nload pass-otp pavucontrol python qalculate-qt rsync virt-manager qemu whois";
+        pkgs+=" lightdm-gtk-greeter cinnamon xfce4-terminal networkmanager-l2tp libreoffice-still flatpak ansible celluloid cmus cronie discord dolphin easytag evolution firefox jq man-db man-pages pass nginx nload pass-otp pavucontrol python qalculate-qt rsync virt-manager qemu whois";
 fi
 pacstrap /mnt $pkgs
 #grub_id=$(mount | grep "/mnt " | cut -d' ' -f1 | rev | cut -d/ -f1 | rev)
