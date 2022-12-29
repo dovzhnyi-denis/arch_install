@@ -62,7 +62,9 @@ elif [[ -n "$cinnamon" ]]; then
         echo 'systemctl enable lightdm' >> /chroot_template.sh
 fi
 
+echo 'echo "Set the root account password"' >> /chroot_template.sh
 echo passwd >> /chroot_template.sh
+echo 'echo "Set the user account password"' >> /chroot_template.sh
 echo passwd user >> /chroot_template.sh
 mv -v /chroot_template.sh /mnt/chroot_part.sh
 chmod 700 /mnt/chroot_part.sh
